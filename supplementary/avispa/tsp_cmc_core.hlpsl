@@ -1,0 +1,155 @@
+% TSP-CMC-SI core protocol model for AVISPA/HLPSL
+%
+% This is an abstract model of the authenticated M1--M4 exchange.
+%
+% Abstraction choices
+% -------------------
+% * KUE abstracts the provisioned user--edge credential bundle.  The
+%   password, smart-card secret, biometric verifier and their local checks
+%   are represented by one uncompromised long-term key in this core model.
+% * KCEAF abstracts the CEAF secret state.  The CEAF response is represented
+%   by H(KCEAF.RS); the human display/selection process is not modeled.
+% * KES is the long-term edge--sensor key.
+% * The paper uses masking/XOR, pseudo-identities, timestamps and a two-record
+%   recovery state.  Symmetric encryption and fresh values are used here to
+%   make the authentication and secrecy claims explicit in the basic DY
+%   model.  Timestamp-window checks, packet-loss recovery, MR1--MR2
+%   resynchronization, retry/rate-control logic, TEE extraction, and the
+%   three-credential offline-enumeration experiment are outside this model.
+%
+% Example commands (when AVISPA is installed):
+%   avispa tsp_cmc_core.hlpsl --ofmc
+%   avispa tsp_cmc_core.hlpsl --cl-atse
+
+role user(
+        U, EN, SN      : agent,
+        KUE, KCEAF     : symmetric_key,
+        H             : hash_func,
+        SND, RCV      : channel(dy)
+      ) played_by U def=
+  local
+    State                    : nat,
+    Ru, Rs, X, Y, TS1, TS4   : text,
+    CEAF1, Q4                 : text,
+    SK                       : text
+
+  init
+    State := 0
+
+  transition
+    % M1: LD/U sends a fresh challenge, CEAF response and nonce.
+    1. State = 0 /\ RCV(start) =|>
+       State' := 1 /\ Ru' := new() /\ Rs' := new() /\
+       TS1' := new() /\ CEAF1' := H(KCEAF.Rs') /\
+       SND({U.SN.Rs'.CEAF1'.Ru'.TS1'}_KUE) /\
+       witness(U, EN, ue_login, Ru')
+
+    % M4: after EN has relayed the sensor response, U derives the key.
+    2. State = 1 /\
+       RCV({U.SN.Ru.X'.Y'.Q4'.TS4'}_KUE) =|>
+       State' := 2 /\ SK' := H(Ru.X'.Y') /\
+       secret(SK', session_key, {U,SN}) /\
+       request(U, EN, en_user, SK')
+end role
+
+
+role edge(
+        U, EN, SN             : agent,
+        KUE, KCEAF, KES       : symmetric_key,
+        H                      : hash_func,
+        SND, RCV               : channel(dy)
+      ) played_by EN def=
+  local
+    State                    : nat,
+    Ru, Rs, X, Y, TS1, TS2,
+    TS3, TS4, CEAF1, Q3, SK  : text
+
+  init
+    State := 0
+
+  transition
+    % EN authenticates M1 and creates the edge--sensor nonce X.
+    1. State = 0 /\
+       RCV({U.SN.Rs'.H(KCEAF.Rs').Ru'.TS1'}_KUE) =|>
+       State' := 1 /\ X' := new() /\ TS2' := new() /\
+       SND({U.SN.Ru'.X'.TS2'}_KES) /\
+       request(EN, U, ue_login, Ru') /\
+       witness(EN, SN, en_sn, X')
+
+    % M3/M4: EN verifies the sensor response and forwards the result to U.
+    2. State = 1 /\
+       RCV({U.SN.Ru.X.Y'.Q3'.TS3'}_KES) =|>
+       State' := 2 /\ TS4' := new() /\ SK' := H(Ru.X.Y') /\
+       SND({U.SN.Ru.X.Y'.H(Ru.X.Y').TS4'}_KUE) /\
+       request(EN, SN, sn_en, Y') /\
+       witness(EN, U, en_user, SK') /\
+       secret(SK', session_key, {U,SN})
+end role
+
+
+role sensor(
+        U, EN, SN       : agent,
+        KES             : symmetric_key,
+        H               : hash_func,
+        SND, RCV        : channel(dy)
+      ) played_by SN def=
+  local
+    State                    : nat,
+    Ru, X, Y, TS2, TS3, SK   : text
+
+  init
+    State := 0
+
+  transition
+    % M2/M3: SN authenticates EN's request and returns a fresh nonce Y.
+    1. State = 0 /\
+       RCV({U.SN.Ru'.X'.TS2'}_KES) =|>
+       State' := 1 /\ Y' := new() /\ TS3' := new() /\
+       SK' := H(Ru'.X'.Y') /\
+       SND({U.SN.Ru'.X'.Y'.H(Ru'.X'.Y').TS3'}_KES) /\
+       request(SN, EN, en_sn, X') /\
+       witness(SN, EN, sn_en, Y') /\
+       secret(SK', session_key, {U,SN})
+end role
+
+
+role session(
+        U, EN, SN             : agent,
+        KUE, KCEAF, KES       : symmetric_key,
+        H                      : hash_func
+      ) def=
+  local
+    SND, RCV : channel(dy)
+
+  composition
+    user(U, EN, SN, KUE, KCEAF, H, SND, RCV) /\
+    edge(U, EN, SN, KUE, KCEAF, KES, H, SND, RCV) /\
+    sensor(U, EN, SN, KES, H, SND, RCV)
+end role
+
+
+role environment() def=
+  const
+    u, e, s, i                         : agent,
+    kue, kceaf, kes                    : symmetric_key,
+    h                                  : hash_func,
+    ue_login, en_sn, sn_en, en_user,
+    session_key                         : protocol_id
+
+  intruder_knowledge = {i, u, e, s, h}
+
+  composition
+    session(u, e, s, kue, kceaf, kes, h)
+end role
+
+
+goal
+  secrecy_of session_key
+  authentication_on ue_login
+  authentication_on en_sn
+  authentication_on sn_en
+  authentication_on en_user
+end goal
+
+
+environment()

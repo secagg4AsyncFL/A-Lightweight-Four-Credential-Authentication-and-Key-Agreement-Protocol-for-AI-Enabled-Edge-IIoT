@@ -1,0 +1,54 @@
+{
+  "metadata": {
+    "timestamp_utc": "2026-10-06T04:53:23Z",
+    "system": "Windows",
+    "release": "10",
+    "machine": "",
+    "cpu_model": "AMD Ryzen 7 7800X3D 8-Core Processor",
+    "logical_cpus": 16,
+    "python": "3.14.2",
+    "hash": "SHA-256 via hashlib/OpenSSL backend",
+    "iterations": 200000,
+    "batch_size": 1000
+  },
+  "primitive": {
+    "sha256_64B": {
+      "mean_ms": 0.00042924049999999996,
+      "median_ms": 0.00042465,
+      "p95_ms": 0.00045390000000000003,
+      "stdev_ms": 2.4775768469743415e-05,
+      "samples": 200
+    },
+    "fuzzy_rep_reference_256B": {
+      "mean_ms": 0.004403198,
+      "median_ms": 0.00437565,
+      "p95_ms": 0.004569200000000001,
+      "stdev_ms": 8.049243972610855e-05,
+      "samples": 50
+    }
+  },
+  "protocol_roles": {
+    "LD_user_15H_plus_FE": {
+      "mean_ms": 0.011273002,
+      "median_ms": 0.0110044,
+      "p95_ms": 0.012613200000000001,
+      "stdev_ms": 0.0009032115172096181,
+      "samples": 200
+    },
+    "EN_21H": {
+      "mean_ms": 0.009132017999999999,
+      "median_ms": 0.0089942,
+      "p95_ms": 0.0099404,
+      "stdev_ms": 0.00047562301747260794,
+      "samples": 200
+    },
+    "SN_6H": {
+      "mean_ms": 0.002710628,
+      "median_ms": 0.0026254,
+      "p95_ms": 0.0031152000000000003,
+      "stdev_ms": 0.0003449676084364324,
+      "samples": 200
+    },
+    "sum_median_ms": 0.022624
+  }
+}

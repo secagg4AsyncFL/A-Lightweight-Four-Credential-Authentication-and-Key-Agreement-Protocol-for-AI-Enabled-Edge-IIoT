@@ -1,0 +1,58 @@
+\documentclass[12pt,american]{article}
+\usepackage[T1]{fontenc}
+\usepackage{fourier}
+\usepackage[hidelinks]{hyperref}
+\usepackage{babel}
+\usepackage[babel]{microtype}
+\usepackage[babel]{csquotes}
+\usepackage[
+  journal={Computers, Materials and Continua},
+  manuscript={CMC Special Issue Manuscript}
+]{reviewresponse}
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[a4paper,total={160mm,245mm},left=25mm,top=25mm]{geometry}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{.5pt}
+\usepackage[shortlabels]{enumitem}
+\usepackage{amsmath,amsfonts}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+\title{A Lightweight Four-Credential Authentication and Key Agreement Protocol for AI-Enabled Edge-IIoT: Transcript-Bound Resistance to Replay and Impersonation}
+\author{Xun Zhang\textsuperscript{1}, Zhiying Mu\textsuperscript{1,*}, Wu Wei\textsuperscript{1}, Zhihui Mu\textsuperscript{1}, Dejun Mu\textsuperscript{1}, and Xin Liu\textsuperscript{2}\\[0.4em]
+\small \textsuperscript{1}School of Cyberspace Security, Northwestern Polytechnical University, Xi'an, China\\
+\small \textsuperscript{2}School of Artificial Intelligence, Lanzhou University, Lanzhou, China\\
+\small Corresponding author: Zhiying Mu (muzhiying@mail.nwpu.edu.cn)}
+
+\begin{document}
+\pagenumbering{roman}
+\hypersetup{pageanchor=false}
+\maketitle
+\hypersetup{pageanchor=true}
+\tableofcontents
+
+\clearpage
+\input{cover_letter.tex}
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\pagestyle{fancy}
+\fancyfoot[R]{\thepage\ / \pageref{LastPage}}
+\fancyfoot[L]{Response Letter for CMC Special Issue}
+\fancyfoot[C]{\ }
+
+% This file is the independent response for the current review round.
+% Earlier-round response blocks are retained separately but are not included here.
+\input{Reviewers/R1_current.tex}
+
+\end{document}
