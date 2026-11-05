@@ -2,11 +2,15 @@
 
 This repository contains the revised manuscript, the reproducible benchmark and AVISPA artifacts, and the response letter for the CMC special-issue revision.
 
+## Current manuscript
+
+The publication-version source is `manuscript/TSP_CMC_SI_rev6_v2_min.tex`, with `manuscript/references.bib`; its compiled PDF is `artifacts/TSP_CMC_SI_rev6_v2_min_clean.pdf`. The tracked manuscript and reviewer-response files document an earlier revision round and are retained for reference.
+
 ## Contents
 
 - `manuscript/` — clean and tracked LaTeX sources, bibliography, template definitions, and the network-model figure.
-- `supplementary/benchmarks/` — the host reference benchmark and its recorded JSON output.
-- `supplementary/avispa/` — the HLPSL model, WSL instructions, and AVISPA result logs.
+- `benchmarks/` and `avispa/` — the reproducibility files at the paths cited in the manuscript.
+- `supplementary/` — the S1--S6 file map and a copy of the benchmark and AVISPA files.
 - `response/` — the cover letter, response letter source, reviewer blocks, and response-letter bibliography.
 - `artifacts/` — the compiled clean manuscript, tracked manuscript, and latest response-letter PDFs.
 
